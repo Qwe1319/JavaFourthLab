@@ -22,7 +22,7 @@ public class Person {
      * 
      * @param id уникальный идентификатор
      * @param name имя сотрудника
-     * @param gender пол сотрудника (М/Ж)
+     * @param gender пол сотрудника0
      * @param department подразделение
      * @param salary зарплата
      * @param dateOfBirth дата рождения

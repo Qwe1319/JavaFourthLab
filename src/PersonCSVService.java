@@ -5,6 +5,8 @@ import com.seclab.model.Person;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -16,13 +18,16 @@ public class PersonCSVService {
     private static final int ID_INDEX = 0;
     private static final int NAME_INDEX = 1;
     private static final int GENDER_INDEX = 2;
-    private static final int DEPARTMENT_INDEX = 3;
-    private static final int SALARY_INDEX = 4;
-    private static final int DATE_OF_BIRTH_INDEX = 5;
+    private static final int DATE_OF_BIRTH_INDEX = 3;
+    private static final int DEPARTMENT_CODE_INDEX = 4;
+    private static final int SALARY_INDEX = 5;
+
+    private static final DateTimeFormatter DATE_FORMATTER_IN = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER_OUT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
      * Читает CSV файл и возвращает список объектов Person.
-     * CSV формат: ID;Имя;Пол;Подразделение;Зарплата;Дата рождения
+     * ID;Имя;Пол;ДатаРождения(DD.MM.YYYY);КодОтдела;Зарплата
      * 
      * @param filePath путь к CSV файлу
      * @return список объектов Person, прочитанных из файла
@@ -59,14 +64,17 @@ public class PersonCSVService {
                     int id = Integer.parseInt(fields[ID_INDEX].trim());
                     String name = fields[NAME_INDEX].trim();
                     String gender = fields[GENDER_INDEX].trim();
-                    String departmentName = fields[DEPARTMENT_INDEX].trim();
+                    String dateStr = fields[DATE_OF_BIRTH_INDEX].trim();
+                    String departmentCode = fields[DEPARTMENT_CODE_INDEX].trim();
                     double salary = Double.parseDouble(fields[SALARY_INDEX].trim());
-                    String dateOfBirth = fields[DATE_OF_BIRTH_INDEX].trim();
 
-                    Department department = departments.computeIfAbsent(departmentName,
+                    Department department = departments.computeIfAbsent(departmentCode,
                             key -> new Department(key));
 
-                    Person person = new Person(id, name, gender, department, salary, dateOfBirth);
+                    LocalDate dateOfBirth = LocalDate.parse(dateStr, DATE_FORMATTER_IN);
+                    String formattedDate = dateOfBirth.format(DATE_FORMATTER_OUT);
+
+                    Person person = new Person(id, name, gender, department, salary, formattedDate);
                     persons.add(person);
 
                 } catch (NumberFormatException e) {
